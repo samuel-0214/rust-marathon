@@ -1,0 +1,220 @@
+
+use std::{collections::HashMap, fs, vec};
+
+fn main() {
+    stack_fn();
+    heap_fn();
+    update_string();
+
+    let s1 = String::from("Hello");
+    let s2 = s1;
+    println!("{}", s2);
+    let s3 = s2;
+    println!("{}", s3);
+
+    let mut s = String::from("Hello");
+    s.push_str(", World!");
+    println!("{}", s);
+    update_str(&mut s);
+    println!("{}", s);
+
+
+    let user1 = User{
+        active: true,
+        username: String::from("suleman"),
+        email: String::from("example@gmail.com"),
+        sign_in_count: 1,
+    };
+
+    println!("User: {}, Email: {}, Active: {}, Sign In Count: {}",
+             user1.username, user1.email, user1.active, user1.sign_in_count);
+
+    let rect = Shape::Rectangle(1.0, 2.0);
+    let a1 = calculate_area(rect);
+    let circle = Shape::Cicle(1.0);
+    let a2 = calculate_area(circle);
+    println!("Area of rectangle:{},circle:{}",a1,a2);
+
+
+    let my_string = String::from("i dont know");
+    match find_first_a(&my_string){
+        Some(index) => println!("The letter 'a' in string '{}' was found at {}th position",my_string,index),
+        None => println!("The letter 'a' was not found in the string '{}'",my_string)
+    }
+
+
+    let greet_file_result = fs::read_to_string("text.txt");
+
+    match greet_file_result{
+        Ok(file_content) => {
+            println!("File read successfully: {:?}",file_content);
+        },
+        Err(error) => {
+            println!("Failed to read file {:?}",error);
+        }
+    }
+
+    let mut vec = Vec::new();
+    vec.push(1);
+    vec.push(2);
+    vec.push(3);
+    vec.push(4);
+    println!("{:?}",even_filter(&vec));
+    println!("{:?}",vec);
+
+    let mut vec1 = Vec::new();
+    vec1.push(1);
+    vec1.push(2);
+    vec1.push(3);
+    vec1.push(4);
+    even_filter_memory_efficient(&mut vec1); 
+    println!("{:?}",vec1);
+
+    //hashmaps 
+    let mut users : HashMap<String,i32> = HashMap::new();
+
+    users.insert(String::from("saleem"), 21);
+    users.insert(String::from("reiner"), 23);
+
+    let name = users.get("harkirat");
+
+    match name {
+        Some(name ) => println!("{}",name),
+        None => println!("Value not found")
+    }
+
+    let input_vec = vec![(String::from("rahul"),21),(String::from("rina"),17)];
+    let hm = group_vaules_by_keys(input_vec);
+
+    println!("{:?}",hm);
+
+    let mut nums = vec![1,2,3,4];
+
+    let iter = nums.iter();
+    for value in iter {
+        println!("Got value {}",value);
+    }
+
+    let iter_mut = nums.iter_mut();
+
+    for value in iter_mut {
+        *value = *value + 1;
+    }
+    println!("{:?}",nums);
+
+    let mut iter_nums = nums.iter_mut();
+
+    let first_number = iter_nums.next();
+    let second_number = iter_nums.next();
+    let third_number = iter_nums.next();
+    let fourth_number = iter_nums.next();
+    let fifth_number = iter_nums.next();
+
+    println!("{:?}",first_number);
+    println!("{:?}",second_number);
+    println!("{:?}",third_number);
+    println!("{:?}",fourth_number);
+    println!("{:?}",fifth_number);
+
+    // This following lines of code will do the exact same as the above  
+    // while let Some(val) = iter_mut.next() {
+    //     println!("Got values {}",val);
+    // }
+
+    let v1_iter = nums.iter();
+
+    let v2_iter = v1_iter.map(|x| x+1);
+    for i in v2_iter {
+        println!("{:?}",i);
+    }
+}
+
+fn update_str(s1 : &mut String){
+    s1.push_str(" World");
+}
+
+fn stack_fn(){
+    let a = 10;
+    let b = 20;
+    let c = a + b;
+    println!("Stack: a = {}, b = {}, c = {}", a, b, c);
+}
+
+fn heap_fn(){
+    let a = String::from("Hello");
+    let b = String::from("World");
+    let combined = format!("{} {}",a,b);
+    println!("Heap: a = {}, b = {}, combined = {}", a, b, combined);
+}
+
+fn update_string() {
+    let mut s = String::from("Initial String");
+    println!("Before update: {}", s);
+    println!("Capacity:{}, Length:{}, Pointer:{:p}", s.capacity(), s.len(), s.as_ptr());
+    s.push_str("and some added stuff");
+    println!("Capacity:{}, Length:{}, Pointer:{:p}", s.capacity(), s.len(), s.as_ptr());
+    println!("After update: {}", s);
+}
+
+fn calculate_area(shape : Shape) -> f64{
+    let area = match shape {
+        Shape::Rectangle(a,b ) => a * b,
+        Shape::Cicle(r) => 3.14  * r * r,
+    };
+    return area;
+}
+
+fn find_first_a(string : &str) -> Option<i32>{
+    for (index,character) in string.chars().enumerate(){
+        if character == 'a'{
+            return Some(index as i32);
+        }
+    }
+    return None;
+}
+
+fn even_filter(vec: &Vec<i32>) -> Vec<i32>{
+    let mut new_vec = Vec::new();
+
+    for val in vec{
+        if val % 2 == 0 {
+            new_vec.push(*val);
+        }
+    }
+
+    new_vec
+}
+
+fn even_filter_memory_efficient(vec : &mut Vec<i32>){
+    let mut i = 0;
+
+    while i < vec.len(){
+        if vec[i] % 2 != 0 {
+            vec.remove(i);
+        }
+        else {
+            i += 1;
+        }
+    }
+}
+
+fn group_vaules_by_keys(vec : Vec<(String,i32)>) -> HashMap<String , i32>{
+    let mut hm = HashMap::new();
+    for (key,value) in vec {
+        hm.insert(key, value);
+    }
+
+    return hm;
+}
+
+struct User {
+    active : bool,
+    username : String,
+    email : String,
+    sign_in_count : u64,
+}
+
+enum Shape{
+    Cicle(f64),
+    Rectangle(f64,f64),
+}
