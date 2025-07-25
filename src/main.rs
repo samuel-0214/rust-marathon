@@ -122,11 +122,52 @@ fn main() {
     // }
 
     let v1_iter = nums.iter();
+    let v4_iter = nums.iter();
 
     let v2_iter = v1_iter.map(|x| x+1);
     for i in v2_iter {
         println!("{:?}",i);
     }
+
+    println!("-------------------------");
+
+    let v3_iter = v4_iter.filter(|x| *x % 2 == 0);
+    for x in v3_iter{
+        println!("{}",x)
+    }
+
+    //Write the logic to first filter all odd values then double each value and create a new vector
+
+    let mut new = Vec::new();
+    let v5_iter = nums.iter();
+    let odd_values = v5_iter.filter(|x| *x % 2 == 1).map(|x| x * 2);
+    for i in odd_values{
+        new.push(i);
+    }
+    println!("{:?}",new);
+
+    //function way
+    let v1 : Vec<i32> = vec![1,2,3,4,5];
+    let ans = filer_map(v1);
+    println!("{:?}",ans);
+
+    // vector -> hashmap -> iterator -> hashmap -> vector
+
+    let new_vec= vec![(String::from("sareena"),32),(String::from("abdul"),23)];
+    println!("{:?}",new_vec);
+    let new_hm : HashMap<String, i32>= new_vec.into_iter().collect();
+
+    for (key,val) in &new_hm{
+        println!("{}:{}",key,val);
+    }
+
+    let back_to_vector : Vec<(String,i32)> = new_hm.iter().map(|(k,v)| (k.clone(),*v)).collect();
+
+    println!("{:?}",back_to_vector);
+
+    // Strings vs slices 
+
+    
 }
 
 fn update_str(s1 : &mut String){
@@ -207,6 +248,11 @@ fn group_vaules_by_keys(vec : Vec<(String,i32)>) -> HashMap<String , i32>{
     return hm;
 }
 
+fn filer_map(v : Vec<i32>) -> Vec<i32>{
+    let new_iter = v.iter().filter(|x| *x % 2 == 1).map(|x| x * 2);
+    let new_vec : Vec<i32> = new_iter.collect();
+    return new_vec;
+}
 struct User {
     active : bool,
     username : String,
