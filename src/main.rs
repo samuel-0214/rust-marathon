@@ -1,5 +1,5 @@
 
-use std::{collections::HashMap, fs, vec};
+use std::{collections::HashMap, fmt::Display, fs, vec};
 
 fn main() {
     stack_fn();
@@ -192,9 +192,46 @@ fn main() {
     //Generics 
     let bigger = largest(1, 2);
     let bigger_str = largest("a", "b");
-
     println!("{}",bigger);
     println!("{}",bigger_str);
+
+    //Traits
+    //creating a user
+    let user = User1{
+        name : String::from("Ved"),
+        age:21,
+    };
+    notify(user);
+
+    //Lifetimes
+    let ans;
+    let word1 = String::from("small");
+    let word2 = String::from("longest");
+    ans = longest(&word1, &word2);
+    println!("longer word is: {}",ans);
+
+
+    //Lifetimes with structs 
+    let name = String::from("ved");
+    let user = User2{
+        name : &name
+    };
+
+    println!("{}",user.name);
+
+    //Generic Type parameters,trait bounds and lifetimes together
+    println!("{}",longest_with_an_announcement(&word1, &word2, "ved"));
+    
+}
+
+pub trait Summary{
+    fn summarize(&self) -> String; 
+}
+
+pub trait Fix{}
+
+pub fn notify<T : Summary + Fix>(item : T){
+    println!("This is the notify function : {}",item.summarize());
 }
 
 fn update_str(s1 : &mut String){
@@ -309,6 +346,33 @@ fn largest <T: std::cmp::PartialOrd>(a:T,b:T) -> T{
     }
     b
 }
+
+fn longest<'a>(a:&'a str,b:&'a str) -> &'a str{
+    if a.len() > b.len(){
+        return a;
+    }
+    b
+}
+
+fn longest_with_an_announcement<'a,T>(
+    x : &'a str,
+    y : &'a str,
+    ann : T) -> &'a str where T : Display,{
+        println!("Announcement {ann}");
+        if x.len() > y.len(){
+            return x;
+        }
+        y
+    }
+
+impl Summary for User1{
+    fn summarize(&self) -> String {
+        return format!("The name is {},the age is {}",self.name,self.age);
+    }
+}
+
+impl Fix for User1{}
+
 struct User {
     active : bool,
     username : String,
@@ -319,4 +383,13 @@ struct User {
 enum Shape{
     Cicle(f64),
     Rectangle(f64,f64),
+}
+
+struct User1{
+    name : String,
+    age : u32
+}
+
+struct User2<'a>{
+    name : &'a str,
 }
