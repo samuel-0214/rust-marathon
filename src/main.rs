@@ -1,5 +1,5 @@
 
-use std::{collections::HashMap, fmt::Display, fs, vec};
+use std::{collections::HashMap, fmt::Display, fs, sync::mpsc, thread, vec};
 
 fn main() {
     stack_fn();
@@ -221,7 +221,92 @@ fn main() {
 
     //Generic Type parameters,trait bounds and lifetimes together
     println!("{}",longest_with_an_announcement(&word1, &word2, "ved"));
+
+    //multithreading 
+    let handle0 = thread::spawn(||{
+        for i in 0..5{
+            println!("Printing the {i}th of spawned thread");
+        }
+    });
+
+        for i in 0..5{
+        println!("Printing the {i}th of main thread");
+    }
+    handle0.join();
+
+    //messaging between threads 
+    let (tx,rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        let val = String::from("hi");
+        tx.send(val).unwrap();
+    });
+
+    let received = rx.recv().unwrap();
+    println!("Got : {received}");
+
     
+    //code that finds the sum from 1-10^8
+    let handle = thread::spawn(move || {
+        let mut val : u128 = 0;
+        for i in 0..=25000000{
+            val = val + i;
+        }
+        val
+    });
+    let partialsum = handle.join().unwrap();
+
+    let handle2 = thread::spawn(move ||{
+        let mut val : u128 = 0;
+        for i in 25000001..=50000000{
+            val = val +i;
+        }
+        val
+    });
+    let partialsum1 = handle2.join().unwrap();
+
+    let handle3 = thread::spawn(move || {
+        let mut val : u128 = 0;
+        for i in 50000001..=75000000{
+            val = val +i;
+        }
+        val
+    });
+    let partialsum2 = handle3.join().unwrap();
+
+    let handle4 = thread::spawn(move || {
+        let mut val : u128 = 0;
+        for i in 75000001..=100000000{
+            val = val +i;
+        }
+        val
+    });
+    let partialsum3 = handle4.join().unwrap();
+
+    let whole_sum = partialsum + partialsum1 + partialsum2 + partialsum3;
+
+    println!("sum of 1-10^8 : {whole_sum}");
+
+
+    //more robust code for finding the sum from 1 - 10^8
+
+    let range_size = 25000000;
+    let mut handles = vec![];
+
+    for i in 0..4{
+        let start = i*range_size +1;
+        let end = (i + 1) *range_size;
+
+        let handle = thread::spawn(move || {
+            partial_sum(start,end)
+        });
+
+        handles.push(handle);
+    }
+
+    let total : u128 = handles.into_iter().map(|h| h.join().unwrap()).sum();
+
+    println!("Total is : {total}");
 }
 
 pub trait Summary{
@@ -364,6 +449,14 @@ fn longest_with_an_announcement<'a,T>(
         }
         y
     }
+
+fn partial_sum(a:u128, b:u128) -> u128{
+    let mut value : u128 = 0;
+    for i in a..=b{
+        value = value + i;
+    }
+    value
+}
 
 impl Summary for User1{
     fn summarize(&self) -> String {
