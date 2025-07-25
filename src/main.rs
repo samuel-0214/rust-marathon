@@ -167,7 +167,34 @@ fn main() {
 
     // Strings vs slices 
 
-    
+    //creating a string
+    let mut str = String::from("Sameer");
+    println!("String : {}",str);
+    //appending a string 
+    str.push_str(" babu");
+    println!("String : {}",str);
+    //deleting a string 
+    str.replace_range(6..str.len(), "");
+    println!("String : {}",str);
+
+
+    //function that takes an input and returns the first name
+    //Approach1
+    let str1 = String::from("sudheer bhai");
+    let ans = first_name(&str1);
+    println!("{}",ans);
+    // the above approach is not optimal cause we double the space cause we are creating two different string variable which takes up space in the heap 
+
+    //Approach2
+    let ans1 = first_word(&str1);
+    println!("{}",ans1);
+
+    //Generics 
+    let bigger = largest(1, 2);
+    let bigger_str = largest("a", "b");
+
+    println!("{}",bigger);
+    println!("{}",bigger_str);
 }
 
 fn update_str(s1 : &mut String){
@@ -252,6 +279,35 @@ fn filer_map(v : Vec<i32>) -> Vec<i32>{
     let new_iter = v.iter().filter(|x| *x % 2 == 1).map(|x| x * 2);
     let new_vec : Vec<i32> = new_iter.collect();
     return new_vec;
+}
+
+fn first_name(str : &String) -> String{
+    let mut ans = String::from("");
+    for i in str.chars(){
+        if i == ' '{
+            break;
+        }
+        ans.push_str(&i.to_string());
+    }
+    return ans;
+}
+
+fn first_word(str : &String) -> &str{
+    let mut space_index = 0;
+    for i in str.chars(){
+        if i == ' '{
+            break;
+        }
+        space_index = space_index+1;
+    }
+    return &str[0..space_index];
+}
+
+fn largest <T: std::cmp::PartialOrd>(a:T,b:T) -> T{
+    if a > b{
+        return a;
+    }
+    b
 }
 struct User {
     active : bool,
